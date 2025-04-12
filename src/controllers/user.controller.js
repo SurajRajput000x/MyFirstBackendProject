@@ -33,8 +33,8 @@ const registerUser = asyncHandler(async (req, res)=> {
         throw new ApiError(409, "User already exists")
     }
 
-    const avatarLocalPath = req.file?.avatar[0]?.path
-    const coverImageLocalPath = req.file?.coverImage[0]?.path
+    const avatarLocalPath = req.files?.avatar[0]?.path
+    const coverImageLocalPath = req.files?.coverImage[0]?.path
 
 
     if (!avatarLocalPath){
@@ -43,12 +43,14 @@ const registerUser = asyncHandler(async (req, res)=> {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    console.log(avatar)
+
 
     if (!avatar){
         throw new ApiError(400, "Avatar file is required 2 .")
     }
 
-    const user = User.create({
+    const user = await User.create({
         username : username.toLowerCase(),
         email,
         fullName,
@@ -57,9 +59,10 @@ const registerUser = asyncHandler(async (req, res)=> {
         coverImage : coverImage?.url || ""
     })
 
-    const createdUser = User.findById(user._id).select(
+    const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
+
 
     if(!createdUser){
         throw new ApiError(500, "Something went wrong while registering the user")
