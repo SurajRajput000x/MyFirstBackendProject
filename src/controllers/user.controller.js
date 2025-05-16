@@ -69,8 +69,9 @@ const registerUser = asyncHandler(async (req, res)=> {
     // console.log(req.files?.coverImage)
     // const coverImageLocalPath = req.files?.coverImage?.[0]?.path                 // INVENTED BY ME
     let coverImageLocalPath;
-    if(req.files && Array.isArray(req.files.coverImage && req.files.coverImage > 0)){
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
         coverImageLocalPath = req.files.coverImage[0].path
+        console.log(coverImageLocalPath)
     }
 
 
@@ -85,7 +86,7 @@ const registerUser = asyncHandler(async (req, res)=> {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-    console.log(avatar)
+    // console.log(avatar)
 
 
     if (!avatar){
@@ -210,8 +211,8 @@ const logoutUser = asyncHandler(async(req, res)=>{
 
     return res
     .status(200)
-    .clearCookies("accessToken", options)
-    .clearCookies("refreshToken", options)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
     .json(
         new ApiResponse(
             200,
